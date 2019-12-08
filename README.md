@@ -5,8 +5,10 @@
 * The APP is updated, you can receive the notification in your chatwork room.
 
 ## How to use
-### crontab
-* Please set this .sh to crontab.
+### at first
+* please set your settings to this shell.
+### for example
+* please set this shell to crontab.
 
 ## Supported Tools
 ### ChatWork
