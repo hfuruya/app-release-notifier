@@ -15,17 +15,10 @@ APP_STORE_URL="https://apps.apple.com/us/app/id"$IOS_APP_ID
 CHATWORK_BASE_URI="https://api.chatwork.com/v2"
 FIX_URL=$APP_STORE_API_BASE_URL$IOS_APP_ID
 
-
-# -s : silent mode (no progress)
-# jq : get value by filtering
-# echo curl -s $FIX_URL | jq -c '.results[] | [.version]'
-
 # get and create json object
 DATA=$( curl -s $FIX_URL | jq -r -c '.results[] | {trackName, version, trackViewUrl}' )
 TITLE=$( echo $DATA | jq -r -c '.trackName')
 STORE_VERSION=$( echo $DATA | jq -r -c '.version')
-# APP_URL=$( echo $DATA | jq -r -c '.trackViewUrl')
-# APP_URL_ENCODED=$( echo $urlencode $APP_URL )
 
 # if output.json is empty, create it
 if [ ! -f ./$OUTPUT_FILE ]; then
@@ -48,10 +41,6 @@ else
         echo $TITLE" version up !! --> "$STORE_VERSION
         echo "$STORE_VERSION" > $OUTPUT_FILE
 
-        # notification with chatowork api
-        # CW_STATUS_RESULT=$(curl -s -X GET -H "X-ChatWorkToken: $CHATWORK_API_ID" "$CHATWORK_BASE_URI/my/status")
-        # echo $CW_STATUS_RESULT
-
         # Chatwork : iOS version up notification
         MSG_TITLE="iOS「"$TITLE"」Update Notification"
         MSG_INFO="ver : "$STORE_VERSION"%0D%0A"$APP_STORE_URL
@@ -60,9 +49,3 @@ else
         echo $CW_MSG_RESULT
     fi
 fi
-
-
-# urlencode
-function urlencode {
-    echo "$1" | nkf -WwMQ | sed 's/=$//g' | tr = % | tr -d '\n'
-}
