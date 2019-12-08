@@ -53,8 +53,8 @@ else
         # echo $CW_STATUS_RESULT
 
         # Chatwork : iOS version up notification
-        MSG_TITLE="iOS版「"$TITLE"」アップデートのお知らせ"
-        MSG_INFO="バージョン : "$STORE_VERSION"%0D%0A"$APP_STORE_URL
+        MSG_TITLE="iOS「"$TITLE"」Update Notification"
+        MSG_INFO="ver : "$STORE_VERSION"%0D%0A"$APP_STORE_URL
         MSG_BODY="%5Binfo%5D%5Btitle%5D$MSG_TITLE%5B%2Ftitle%5D$MSG_INFO%5B%2Finfo%5D"
         CW_MSG_RESULT=$(curl -s -X POST -H "X-ChatWorkToken: $CHATWORK_API_ID" -d "body=$MSG_BODY&self_unread=0" "$CHATWORK_BASE_URI/rooms/$CHATWORK_ROOM_ID/messages")
         echo $CW_MSG_RESULT
