@@ -28,8 +28,8 @@ if [ ! -f $OUTPUT_FILE ]; then
     mkdir $OUTPUT_DIR
     echo "$STORE_VERSION" > $OUTPUT_FILE
 
-    echo "current store version : $STORE_VERSION"
-    echo "Initialize Completed !!"
+    # echo "current store version : $STORE_VERSION"
+    # echo "Initialize Completed !!"
 
 else
     LOCAL_VERSION=`cat $OUTPUT_FILE`
@@ -37,11 +37,9 @@ else
     # check version
     # if current output.json isnt match it, that APP was updated
     if [ "$STORE_VERSION" = "$LOCAL_VERSION" ]; then
-        # echo "equal"
-        echo $TITLE" current version --> "$LOCAL_VERSION
+        # echo $TITLE" current version --> "$LOCAL_VERSION
     else
-        # echo "not equal"
-        echo $TITLE" version up !! --> "$STORE_VERSION
+        # echo $TITLE" version up !! --> "$STORE_VERSION
         echo "$STORE_VERSION" > $OUTPUT_FILE
 
         # Chatwork : iOS version up notification
