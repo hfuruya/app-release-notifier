@@ -7,13 +7,15 @@
 IOS_APP_ID="your ios app id"
 CHATWORK_API_ID="your chatwork api id"
 CHATWORK_ROOM_ID="your chatwork room id"
-OUTPUT_FILE="ios_"$IOS_APP_ID"_version_output.json"
 
 # fixed settings
 APP_STORE_API_BASE_URL="https://itunes.apple.com/lookup?id="
 APP_STORE_URL="https://apps.apple.com/us/app/id"$IOS_APP_ID
 CHATWORK_BASE_URI="https://api.chatwork.com/v2"
 FIX_URL=$APP_STORE_API_BASE_URL$IOS_APP_ID
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+OUTPUT_DIR=$SCRIPT_DIR"/output/"
+OUTPUT_FILE=$OUTPUT_DIR"ios_"$IOS_APP_ID"_version.txt"
 
 # get and create json object
 DATA=$( curl -s $FIX_URL | jq -r -c '.results[] | {trackName, version, trackViewUrl}' )
@@ -21,8 +23,9 @@ TITLE=$( echo $DATA | jq -r -c '.trackName')
 STORE_VERSION=$( echo $DATA | jq -r -c '.version')
 
 # if output.json is empty, create it
-if [ ! -f ./$OUTPUT_FILE ]; then
+if [ ! -f $OUTPUT_FILE ]; then
 
+    mkdir $OUTPUT_DIR
     echo "$STORE_VERSION" > $OUTPUT_FILE
 
     echo "current store version : $STORE_VERSION"
