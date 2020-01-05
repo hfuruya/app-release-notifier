@@ -7,18 +7,20 @@
 IOS_APP_ID="your ios app id"
 CHATWORK_API_ID="your chatwork api id"
 CHATWORK_ROOM_ID="your chatwork room id"
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+OUTPUT_DIR=$SCRIPT_DIR"/output"
+OUTPUT_FILE=$OUTPUT_DIR"/ios_"$IOS_APP_ID"_version_output.txt"
+COUNTRY=JP
+COUNTRY_LOWER=`echo "$COUNTRY" | tr '[:upper:]' '[:lower:]'`
 
 # fixed settings
 APP_STORE_API_BASE_URL="https://itunes.apple.com/lookup?id="
-APP_STORE_URL="https://apps.apple.com/us/app/id"$IOS_APP_ID
+APP_STORE_URL="https://apps.apple.com/"$COUNTRY_LOWER"/app/id"$IOS_APP_ID
 CHATWORK_BASE_URI="https://api.chatwork.com/v2"
-FIX_URL=$APP_STORE_API_BASE_URL$IOS_APP_ID
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-OUTPUT_DIR=$SCRIPT_DIR"/output/"
-OUTPUT_FILE=$OUTPUT_DIR"ios_"$IOS_APP_ID"_version.txt"
+FIX_URL=$APP_STORE_API_BASE_URL$IOS_APP_ID"&country="$COUNTRY
 
 # get and create json object
-DATA=$( curl -s $FIX_URL | jq -r -c '.results[] | {trackName, version, trackViewUrl}' )
+DATA=$( curl -H 'Cache-Control: no-store' -H 'Cache-Control: no-cache' -s $FIX_URL | jq -r -c '.results[] | {trackName, version, trackViewUrl}' )
 TITLE=$( echo $DATA | jq -r -c '.trackName')
 STORE_VERSION=$( echo $DATA | jq -r -c '.version')
 
@@ -28,18 +30,23 @@ if [ ! -f $OUTPUT_FILE ]; then
     mkdir $OUTPUT_DIR
     echo "$STORE_VERSION" > $OUTPUT_FILE
 
-    # echo "current store version : $STORE_VERSION"
-    # echo "Initialize Completed !!"
+    echo "current store version : $STORE_VERSION"
+    echo "Initialize Completed !!"
 
 else
     LOCAL_VERSION=`cat $OUTPUT_FILE`
 
+    LOCAL_VERSION_ARRAY=(${LOCAL_VERSION//./ })
+    STORE_VERSION_ARRAY=(${STORE_VERSION//./ })
+
+    LOCAL_VERSION_CODE=${LOCAL_VERSION_ARRAY[0]}`printf %04d ${LOCAL_VERSION_ARRAY[1]}``printf %04d ${LOCAL_VERSION_ARRAY[2]}`
+    STORE_VERSION_CODE=${STORE_VERSION_ARRAY[0]}`printf %04d ${STORE_VERSION_ARRAY[1]}``printf %04d ${STORE_VERSION_ARRAY[2]}`
+
     # check version
-    # if current output.json isnt match it, that APP was updated
-    if [ "$STORE_VERSION" = "$LOCAL_VERSION" ]; then
-        # echo $TITLE" current version --> "$LOCAL_VERSION
+    if [ $LOCAL_VERSION_CODE -ge $STORE_VERSION_CODE ]; then
+        echo $TITLE" current version --> "$LOCAL_VERSION
     else
-        # echo $TITLE" version up !! --> "$STORE_VERSION
+        echo $TITLE" version up !! --> "$STORE_VERSION
         echo "$STORE_VERSION" > $OUTPUT_FILE
 
         # Chatwork : iOS version up notification
